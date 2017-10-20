@@ -27,8 +27,8 @@ config :nerves_network, :default,
     ipv4_address_method: :dhcp
   ]
 
-config :firmware, interface: :eth0
-#config :firmware, interface: :wlan0
+#config :firmware, interface: :eth0
+config :firmware, interface: :wlan0
 #config :firmware, interface: :usb0
 
 config :ui, Ui.Endpoint,
@@ -44,6 +44,11 @@ config :ui, Ui.Endpoint,
 config :bootloader,
   init: [:nerves_runtime, :nerves_network],
   app: :firmware
+
+config :nerves_firmware_ssh,
+  authorized_keys: [
+    File.read!(Path.join(System.user_home!, ".ssh_hackfest/id_rsa.pub"))
+  ]
 
 # Import target specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

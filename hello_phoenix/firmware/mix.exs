@@ -63,6 +63,8 @@ defmodule Firmware.Mixfile do
       {:bootloader, "~> 0.1"},
       {:nerves_runtime, "~> 0.4"},
       {:nerves_network, "~> 0.3"},
+      {:nerves_firmware_ssh, "~> 0.2"},
+      {:nerves_leds, "~> 0.7"},
       {:ui, path: "../ui"},
     ]
   end
