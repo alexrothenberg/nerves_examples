@@ -31,14 +31,14 @@ defmodule Firmware do
 
   def alex do
     blink_it = BlinkIt.init()
-    BlinkIt.set_pixel(blink_it, 1, %{red: 255, green: 0, blue: 0, brightness: 7})
-    BlinkIt.set_pixel(blink_it, 2, %{red: 0, green: 255, blue: 0, brightness: 7})
-    BlinkIt.set_pixel(blink_it, 3, %{red: 0, green: 0, blue: 255, brightness: 7})
-    BlinkIt.set_pixel(blink_it, 4, %{red: 255, green: 127, blue: 0, brightness: 7})
-    BlinkIt.set_pixel(blink_it, 5, %{red: 255, green: 0, blue: 127, brightness: 7})
-    BlinkIt.set_pixel(blink_it, 6, %{red: 0, green: 255, blue: 127, brightness: 7})
-    BlinkIt.set_pixel(blink_it, 7, %{red: 0, green: 127, blue: 0, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 8, %{red: 0, green: 127, blue: 0, brightness: 31})
+    BlinkIt.set_pixel(blink_it, 0, %{red: 255, green: 0, blue: 0, brightness: 7})
+    BlinkIt.set_pixel(blink_it, 1, %{red: 0, green: 255, blue: 0, brightness: 7})
+    BlinkIt.set_pixel(blink_it, 2, %{red: 0, green: 0, blue: 255, brightness: 7})
+    BlinkIt.set_pixel(blink_it, 3, %{red: 255, green: 127, blue: 0, brightness: 7})
+    BlinkIt.set_pixel(blink_it, 4, %{red: 255, green: 0, blue: 127, brightness: 7})
+    BlinkIt.set_pixel(blink_it, 5, %{red: 0, green: 255, blue: 127, brightness: 7})
+    BlinkIt.set_pixel(blink_it, 6, %{red: 0, green: 127, blue: 0, brightness: 1})
+    BlinkIt.set_pixel(blink_it, 7, %{red: 0, green: 127, blue: 0, brightness: 31})
     BlinkIt.show(blink_it)
   end
 
