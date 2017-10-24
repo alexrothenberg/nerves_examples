@@ -21,6 +21,7 @@ defmodule BlinkIt.Impl do
   end
 
   def set_pixel(pixels, index, rgbb) do
+    IO.inspect [:set_pixel, index, rgbb]
     List.replace_at(pixels, index, rgbb)
   end
 

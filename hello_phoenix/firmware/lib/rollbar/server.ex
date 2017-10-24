@@ -16,4 +16,9 @@ defmodule Rollbar.Server do
     { :reply, result, store }
   end
 
+  def handle_call({:get_items, project_access_token}, _, store) do
+    items = Impl.get_items(project_access_token)
+    { :reply, items, store }
+  end
+
 end

@@ -22,7 +22,7 @@ defmodule Firmware do
 
     # {:ok, pin} = GPIO.start_link(24, :output)
     # toggle_pin_forever(pin)
-    alex()
+    # alex()
   end
 
   def start_network do
@@ -54,17 +54,55 @@ defmodule Firmware do
     # toggle_pin_forever(output_pid)
   end
 
-  def rollbar do
-    rollbar = Rollbar.new
+  def rollbar_access_tokens(rollbar) do
     projects = Rollbar.get_projects(rollbar)
-    access_tokens = Enum.map(projects, fn(project)->
+    projects
+    |> Enum.map(fn(project)->
       id = project["id"]
       access_token = Rollbar.get_project_read_only_access_token(rollbar, id)
-      %{name: project["name"], id: id, access_token: access_token}
+      # %{name: project["name"], id: id, access_token: access_token}
+      [project["name"], access_token]
     end)
-    # {:ok, response} = HTTPoison.get("https://api.rollbar.com/api/1/projects\?access_token\=0c063875c96f4226844835f37bf918ff")
-    # {:ok, result} = Poison.decode(response.body)
-    # HTTPoison.get("https://api.rollbar.com/api/1/items/\?access_token\=cb878b4135974295ac30f07b3b630dcb")
+    |> Enum.map(fn [a,b]-> {a,b} end)
+    |> Map.new
+  end
+
+  def rollbar do
+    rollbar = Rollbar.init()
+    access_tokens = rollbar_access_tokens(rollbar)
+
+    blink_it = BlinkIt.init()
+    show_rollbar_pixel(rollbar, blink_it, 0, access_tokens["Apothecary"])
+    show_rollbar_pixel(rollbar, blink_it, 1, access_tokens["BCI_Services"])
+    show_rollbar_pixel(rollbar, blink_it, 2, access_tokens["norman"])
+    show_rollbar_pixel(rollbar, blink_it, 3, access_tokens["Delorean"])
+    show_rollbar_pixel(rollbar, blink_it, 4, access_tokens["postmaster"])
+    show_rollbar_pixel(rollbar, blink_it, 5, access_tokens["salk"])
+    show_rollbar_pixel(rollbar, blink_it, 6, access_tokens["staff"])
+    show_rollbar_pixel(rollbar, blink_it, 7, access_tokens["snowflake"])
+    BlinkIt.show(blink_it)
+  end
+
+  def one_minute_in_seconds, do: 60
+  def one_hour_in_seconds, do: one_minute_in_seconds() * 60
+  def one_day_in_seconds, do: one_hour_in_seconds() * 24
+
+  def show_rollbar_pixel(rollbar, blink_it, pixel_index, project_access_token) do
+    %{ "last_occurrence_timestamp" => last_occurrence_timestamp } =
+      Rollbar.get_items(rollbar, project_access_token)
+      |> List.first
+    seconds_ago = DateTime.utc_now
+      |> DateTime.diff(DateTime.from_unix!(last_occurrence_timestamp))
+    IO.inspect [:show_rollbar_pixel, pixel_index, seconds_ago, last_occurrence_timestamp]
+    if (seconds_ago < one_day_in_seconds()) do
+      brightness = div(seconds_ago, one_hour_in_seconds())
+      BlinkIt.set_pixel(blink_it, pixel_index, %{red: 255, green: 0, blue: 0, brightness: brightness})
+    else
+      days_ago = div(seconds_ago, one_day_in_seconds())
+      red = div(127, days_ago)
+      BlinkIt.set_pixel(blink_it, pixel_index, %{red: red, green: 0, blue: 0, brightness: 7})
+    end
+    # BlinkIt.show(blink_it)
   end
 
 end
