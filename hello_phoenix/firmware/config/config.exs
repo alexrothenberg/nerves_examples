@@ -55,3 +55,13 @@ config :nerves_firmware_ssh,
 # Uncomment to use target specific configurations
 
 # import_config "#{Mix.Project.config[:target]}.exs"
+config :nerves_ntp, :ntpd, "/usr/sbin/ntpd"
+
+# servers to sync time from
+config :nerves_ntp, :servers, [
+    "0.pool.ntp.org",
+    "1.pool.ntp.org",
+    "2.pool.ntp.org",
+    "3.pool.ntp.org"
+  ]
+

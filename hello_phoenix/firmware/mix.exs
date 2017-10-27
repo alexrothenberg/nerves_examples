@@ -40,7 +40,7 @@ defmodule Firmware.Mixfile do
   def application(_target) do
     [mod: {Firmware, []},
      # applications: [:nerves_neopixel],
-     extra_applications: [:logger, :httpoison]]
+     extra_applications: [:logger, :httpoison, :nerves_network, :nerves_ntp]]
   end
 
   # Dependencies can be Hex packages:
@@ -68,6 +68,7 @@ defmodule Firmware.Mixfile do
       # {:nerves_neopixel, git: "https://github.com/GregMefford/nerves_neopixel"},
       {:nerves_neopixel, "~> 0.3"},
       {:nerves_leds, "~> 0.7"},
+      {:nerves_ntp, "~> 0.1.0"},
       {:elixir_ale, "~> 1.0"},
       {:httpoison, "~> 0.13"},
       {:ui, path: "../ui"},
