@@ -22,7 +22,6 @@ defmodule Firmware do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Fw.Supervisor]
     Supervisor.start_link(children, opts)
-    # IO.inspect(rollbar())
 
     # {:ok, pin} = GPIO.start_link(24, :output)
     # toggle_pin_forever(pin)

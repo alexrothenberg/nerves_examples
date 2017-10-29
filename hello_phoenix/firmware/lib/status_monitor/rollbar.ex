@@ -1,7 +1,6 @@
 defmodule StatusMonitor.Rollbar do
   def fetch_status() do
     rollbar_access_tokens()
-      |> IO.inspect
       |> Enum.map(&last_rollbar_error/1)
   end
 
@@ -15,7 +14,6 @@ defmodule StatusMonitor.Rollbar do
         end)
         |> Enum.sort
         |> List.last
-        |> IO.inspect
         |> (&(&1.seconds_ago)).()
         |> to_rgbb
       BlinkIt.set_pixel(led_index, rgbb)
@@ -37,17 +35,6 @@ defmodule StatusMonitor.Rollbar do
   def one_minute_in_seconds, do: 60
   def one_hour_in_seconds, do: one_minute_in_seconds() * 60
   def one_day_in_seconds, do: one_hour_in_seconds() * 24
-
-  # def fetch_rollbar_status(project_access_token) do
-  #   last_rollbar_error(project_access_token)
-  #   end)
-  #   |> Enum.sort
-  #   |> List.last
-  #   |> IO.inspect
-  #   |> to_rgbb
-  #   BlinkIt.set_pixel(pixel_index, rgbb)
-  #   # BlinkIt.show()
-  # end
 
   def last_rollbar_error({project_name, project_access_token}) do
     latest_item = Rollbar.get_items(project_access_token)
