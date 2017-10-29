@@ -1,14 +1,9 @@
 defmodule BlinkIt do
-  def init() do
-    {:ok, blink_it} = GenServer.start_link(BlinkIt.Server, %{})
-    blink_it
+  def set_pixel(index, rgbb) do
+    GenServer.call(BlinkIt.Server, {:set_pixel, index, rgbb})
   end
 
-  def set_pixel(blink_it, index, rgbb) do
-    GenServer.call(blink_it, {:set_pixel, index, rgbb})
-  end
-
-  def show(blink_it) do
-    GenServer.call(blink_it, {:show})
+  def show() do
+    GenServer.call(BlinkIt.Server, {:show})
   end
 end

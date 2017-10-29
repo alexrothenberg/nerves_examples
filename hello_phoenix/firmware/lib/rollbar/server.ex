@@ -1,8 +1,15 @@
 defmodule Rollbar.Server do
   use GenServer
   alias Rollbar.Impl
+  require Logger
+
+  def start_link do
+    Logger.info "Starting Rollbar GenServer #{__MODULE__}"
+    GenServer.start_link(__MODULE__, %{}, name: Rollbar.Server)
+  end
 
   def init(store) do
+    Logger.info "Initing Rollbar GenServer"
     { :ok, store }
   end
 

@@ -1,28 +1,25 @@
 defmodule StatusMonitor.Rollbar do
   def update_status do
     IO.inspect ['StatusMonitor.Rollbar.update_status']
-    rollbar = Rollbar.init()
-    access_tokens = rollbar_access_tokens(rollbar)
+    access_tokens = rollbar_access_tokens()
 
-    blink_it = BlinkIt.init()
-    show_rollbar_pixel(rollbar, blink_it, 0, [access_tokens["api_gateway"], access_tokens["Apothecary"]])
-    show_rollbar_pixel(rollbar, blink_it, 1, [access_tokens["BCI_Services"], access_tokens["Bouncah"]])
-    show_rollbar_pixel(rollbar, blink_it, 2, [access_tokens["Delorean"], access_tokens["feature_toggles"], ])
-    show_rollbar_pixel(rollbar, blink_it, 3, [access_tokens["norman"], access_tokens["patient_log"]])
-    show_rollbar_pixel(rollbar, blink_it, 4, [access_tokens["Patients"], access_tokens["postmaster"]])
-    show_rollbar_pixel(rollbar, blink_it, 5, [access_tokens["referrals"], access_tokens["salk"]])
-    show_rollbar_pixel(rollbar, blink_it, 6, [access_tokens["snowflake"], access_tokens["staff"]])
-    show_rollbar_pixel(rollbar, blink_it, 7, [access_tokens["takotsubo"]])
-    BlinkIt.show(blink_it)
+    show_rollbar_pixel(0, [access_tokens["api_gateway"], access_tokens["Apothecary"]])
+    show_rollbar_pixel(1, [access_tokens["BCI_Services"], access_tokens["Bouncah"]])
+    show_rollbar_pixel(2, [access_tokens["Delorean"], access_tokens["feature_toggles"], ])
+    show_rollbar_pixel(3, [access_tokens["norman"], access_tokens["patient_log"]])
+    show_rollbar_pixel(4, [access_tokens["Patients"], access_tokens["postmaster"]])
+    show_rollbar_pixel(5, [access_tokens["referrals"], access_tokens["salk"]])
+    show_rollbar_pixel(6, [access_tokens["snowflake"], access_tokens["staff"]])
+    show_rollbar_pixel(7, [access_tokens["takotsubo"]])
+    BlinkIt.show()
   end
 
-  def rollbar_access_tokens(rollbar) do
-    projects = Rollbar.get_projects(rollbar)
+  def rollbar_access_tokens() do
+    projects = Rollbar.get_projects()
     projects
     |> Enum.map(fn(project)->
       id = project["id"]
-      access_token = Rollbar.get_project_read_only_access_token(rollbar, id)
-      # %{name: project["name"], id: id, access_token: access_token}
+      access_token = Rollbar.get_project_read_only_access_token(id)
       [project["name"], access_token]
     end)
     |> Enum.map(fn [a,b]-> {a,b} end)
@@ -34,21 +31,21 @@ defmodule StatusMonitor.Rollbar do
   def one_hour_in_seconds, do: one_minute_in_seconds() * 60
   def one_day_in_seconds, do: one_hour_in_seconds() * 24
 
-  def show_rollbar_pixel(rollbar, blink_it, pixel_index, project_access_tokens) do
+  def show_rollbar_pixel(pixel_index, project_access_tokens) do
     rgbb = Enum.map(project_access_tokens, fn(project_access_token)->
-      last_rollbar_error(rollbar, project_access_token)
+      last_rollbar_error(project_access_token)
     end)
     |> Enum.sort
     |> List.last
     |> IO.inspect
     |> to_rgbb
-    BlinkIt.set_pixel(blink_it, pixel_index, rgbb)
-    # BlinkIt.show(blink_it)
+    BlinkIt.set_pixel(pixel_index, rgbb)
+    # BlinkIt.show()
   end
 
-  def last_rollbar_error(rollbar, project_access_token) do
+  def last_rollbar_error(project_access_token) do
     %{ "last_occurrence_timestamp" => last_occurrence_timestamp } =
-      Rollbar.get_items(rollbar, project_access_token)
+      Rollbar.get_items(project_access_token)
       |> List.first
     DateTime.utc_now
       |> DateTime.diff(DateTime.from_unix!(last_occurrence_timestamp))

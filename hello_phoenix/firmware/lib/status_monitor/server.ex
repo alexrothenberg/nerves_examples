@@ -3,7 +3,8 @@ defmodule StatusMonitor.Server do
   require Logger
 
   def start_link do
-    GenServer.start_link(__MODULE__, %{})
+    Logger.info "Starting Status Monitor GenServer #{__MODULE__}"
+    GenServer.start_link(__MODULE__, %{}, name: StatusMonitor.Server)
   end
 
   def init(state) do

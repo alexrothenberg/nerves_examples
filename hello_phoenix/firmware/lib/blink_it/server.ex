@@ -2,6 +2,10 @@ defmodule BlinkIt.Server do
   use GenServer
   alias BlinkIt.Impl
 
+  def start_link do
+    GenServer.start_link(__MODULE__, %{}, name: BlinkIt.Server)
+  end
+
   def init(_args) do
     {:ok, Impl.init() }
   end

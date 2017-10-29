@@ -1,6 +1,7 @@
 defmodule Firmware do
   use Application
   alias ElixirALE.GPIO
+  require Logger
 
   @interface Application.get_env(:firmware, :interface, :eth0)
 
@@ -12,6 +13,8 @@ defmodule Firmware do
     children = [
       supervisor(Phoenix.PubSub.PG2, [Nerves.PubSub, [poolsize: 1]]),
       worker(Task, [fn -> start_network() end], restart: :transient),
+      worker(BlinkIt.Server, []),
+      worker(Rollbar.Server, []),
       worker(StatusMonitor.Server, [])
     ]
 
@@ -27,20 +30,21 @@ defmodule Firmware do
   end
 
   def start_network do
+    Logger.info "Setting up Network in Firmware.start_network()"
     Nerves.Network.setup to_string(@interface)
+    Logger.info "Done setting up Network in Firmware.start_network()"
   end
 
   def alex do
-    blink_it = BlinkIt.init()
-    BlinkIt.set_pixel(blink_it, 0, %{red: 0, green: 0, blue: 255, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 1, %{red: 0, green: 0, blue: 255, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 2, %{red: 0, green: 0, blue: 50, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 3, %{red: 50, green: 27, blue: 0, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 4, %{red: 185, green: 48, blue: 5, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 5, %{red: 165, green: 42, blue: 42, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 6, %{red: 165, green: 42, blue: 42, brightness: 1})
-    BlinkIt.set_pixel(blink_it, 7, %{red: 245, green: 222, blue: 147, brightness: 1})
-    BlinkIt.show(blink_it)
+    BlinkIt.set_pixel(0, %{red: 255, green: 255, blue: 0, brightness: 1})
+    BlinkIt.set_pixel(1, %{red: 0, green: 0, blue: 255, brightness: 1})
+    BlinkIt.set_pixel(2, %{red: 0, green: 0, blue: 50, brightness: 1})
+    BlinkIt.set_pixel(3, %{red: 255, green: 27, blue: 0, brightness: 1})
+    BlinkIt.set_pixel(4, %{red: 185, green: 48, blue: 5, brightness: 1})
+    BlinkIt.set_pixel(5, %{red: 165, green: 42, blue: 42, brightness: 1})
+    BlinkIt.set_pixel(6, %{red: 165, green: 42, blue: 42, brightness: 1})
+    BlinkIt.set_pixel(7, %{red: 245, green: 222, blue: 147, brightness: 1})
+    BlinkIt.show()
   end
 
   def toggle_pin_forever(output_pid) do
