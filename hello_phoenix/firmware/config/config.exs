@@ -31,6 +31,9 @@ config :nerves_network, :default,
 config :firmware, interface: :wlan0
 #config :firmware, interface: :usb0
 
+config :firmware, :tokens,
+  rollbar_token: System.get_env("NERVES_ROLLBAR_TOKEN")
+
 config :ui, Ui.Endpoint,
   http: [port: 80],
   url: [host: "localhost", port: 80],

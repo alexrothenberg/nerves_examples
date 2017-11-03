@@ -3,9 +3,9 @@ defmodule Rollbar.Impl do
     %{}
   end
 
-  def get_projects() do
+  def get_projects(access_token) do
     {:ok, response} = HTTPoison.get(
-      "https://api.rollbar.com/api/1/projects?access_token=0c063875c96f4226844835f37bf918ff",
+      "https://api.rollbar.com/api/1/projects?access_token=#{access_token}",
       [],
       hackney: [:insecure]
       )
@@ -13,9 +13,9 @@ defmodule Rollbar.Impl do
     body["result"]
   end
 
-  def get_project_read_only_access_token(id) do
+  def get_project_read_only_access_token(access_token, id) do
     {:ok, response} = HTTPoison.get(
-      "https://api.rollbar.com/api/1/project/#{id}/access_tokens?access_token=0c063875c96f4226844835f37bf918ff",
+      "https://api.rollbar.com/api/1/project/#{id}/access_tokens?access_token=#{access_token}",
       [],
       hackney: [:insecure]
       )

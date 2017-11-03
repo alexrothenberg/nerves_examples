@@ -4,8 +4,9 @@ defmodule Rollbar.Server do
   require Logger
 
   def start_link do
+    [rollbar_token: token ] = Application.get_env(:firmware, :tokens, :rollbar_token)
     Logger.info "Starting Rollbar GenServer #{__MODULE__}"
-    GenServer.start_link(__MODULE__, %{}, name: Rollbar.Server)
+    GenServer.start_link(__MODULE__, %{ token: token }, name: Rollbar.Server)
   end
 
   def init(store) do
@@ -13,13 +14,13 @@ defmodule Rollbar.Server do
     { :ok, store }
   end
 
-  def handle_call({:get_projects}, _, store) do
-    result = Impl.get_projects()
+  def handle_call({:get_projects}, _, %{ token: token } = store) do
+    result = Impl.get_projects(token)
     { :reply, result, store }
   end
 
-  def handle_call({:get_project_read_only_access_token, project_id}, _, store) do
-    result = Impl.get_project_read_only_access_token(project_id)
+  def handle_call({:get_project_read_only_access_token, project_id}, _, %{ token: token } = store) do
+    result = Impl.get_project_read_only_access_token(token, project_id)
     { :reply, result, store }
   end
 
