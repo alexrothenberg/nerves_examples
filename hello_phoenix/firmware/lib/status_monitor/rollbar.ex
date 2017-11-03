@@ -12,7 +12,7 @@ defmodule StatusMonitor.Rollbar do
         |> Enum.map(fn(name)->
           Enum.find(status, &( &1.name == name))
         end)
-        |> Enum.sort
+        |> Enum.sort(&(&1.seconds_ago >= &2.seconds_ago))
         |> List.last
         |> (&(&1.seconds_ago)).()
         |> to_rgbb
@@ -50,33 +50,49 @@ defmodule StatusMonitor.Rollbar do
   end
 
   def to_rgbb(seconds) do
+    hours_ago = div(seconds, one_hour_in_seconds())
     days_ago = div(seconds, one_day_in_seconds())
-    if (days_ago > 7) do
-      # green
-      %{
-        red: 0,
-        blue: 0,
-        green: 18,
-        brightness: 3
-      }
-    else
-      if (days_ago < 1) do
-        # red
+    cond do
+      hours_ago < 6 ->
+        # bright red
         %{
           red: 255,
           green: 0,
           blue: 0,
           brightness: 31
         }
-      else
-        # pink
+      days_ago < 1 ->
+        # still pretty bright red
         %{
-          red: 127,
-          green: 18,
-          blue: 18,
-          brightness: 7
+          red: 100,
+          green: 0,
+          blue: 0,
+          brightness: 15
         }
-      end
+      days_ago < 3 ->
+        # red
+        %{
+          red: 10,
+          green: 0,
+          blue: 0,
+          brightness: 31
+        }
+      days_ago < 7 ->
+        # yellowish
+        %{
+          red: 98,
+          green: 18,
+          blue: 0,
+          brightness: 3
+        }
+      true ->
+        # green
+        %{
+          red: 0,
+          blue: 0,
+          green: 18,
+          brightness: 3
+        }
     end
   end
 end

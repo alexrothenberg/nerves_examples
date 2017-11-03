@@ -19,7 +19,7 @@ defmodule StatusMonitor.Server do
       "6" => ["snowflake", "staff"],
       "7" => ["takotsubo"]
     }
-    delay = 60 * 1000 # 1 minute
+    delay = 5 * 60 * 1000 # 5 minutes
     schedule_status_check(20_000)
     {:ok, %{ led_mapping: led_mapping, delay: delay }}
   end
