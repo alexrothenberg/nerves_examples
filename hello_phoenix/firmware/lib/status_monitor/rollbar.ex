@@ -12,6 +12,7 @@ defmodule StatusMonitor.Rollbar do
         |> Enum.map(fn(name)->
           Enum.find(status, &( &1.name == name))
         end)
+        |> Enum.filter(&(Map.has_key?(&1, :seconds_ago)))
         |> Enum.sort(&(&1.seconds_ago >= &2.seconds_ago))
         |> List.last
         |> (&(&1.seconds_ago)).()
@@ -64,21 +65,21 @@ defmodule StatusMonitor.Rollbar do
       days_ago < 1 ->
         # still pretty bright red
         %{
-          red: 100,
+          red: 128,
           green: 0,
           blue: 0,
-          brightness: 15
+          brightness: 20
         }
       days_ago < 3 ->
         # red
         %{
-          red: 10,
+          red: 30,
           green: 0,
           blue: 0,
-          brightness: 31
+          brightness: 10
         }
       days_ago < 7 ->
-        # yellowish
+        # yellow
         %{
           red: 98,
           green: 18,

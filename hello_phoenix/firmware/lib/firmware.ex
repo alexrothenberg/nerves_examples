@@ -18,6 +18,7 @@ defmodule Firmware do
       worker(StatusMonitor.Server, [])
     ]
 
+
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Fw.Supervisor]
@@ -31,6 +32,7 @@ defmodule Firmware do
   def start_network do
     Logger.info "Setting up Network in Firmware.start_network()"
     Nerves.Network.setup to_string(@interface)
+
     Logger.info "Done setting up Network in Firmware.start_network()"
   end
 

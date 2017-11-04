@@ -20,18 +20,41 @@ defmodule StatusMonitor.Server do
       "7" => ["takotsubo"]
     }
     delay = 5 * 60 * 1000 # 5 minutes
-    schedule_status_check(20_000)
+
+    send(self(), :wait_for_wifi)
     {:ok, %{ led_mapping: led_mapping, delay: delay }}
+  end
+
+  def handle_info(:wait_for_wifi, state) do
+    # IO.inspect Nerves.NetworkInterface.status("wlan0")
+    # IO.inspect [:inet.getif(), has_non_loopback_ip?()]
+    if has_non_loopback_ip?() do
+      send(self(), :run_ntp)
+    else
+      Process.send_after(self(), :wait_for_wifi, 1000)
+    end
+    # case Nerves.NetworkInterface.status("wlan0") do
+    #   {:ok, %{is_up: true, is_running: true}} -> send(self(), :run_ntp)
+    #   _ -> Process.send_after(self(), :wait_for_wifi, 1000)
+    # end
+    {:noreply, state}
+  end
+
+  def handle_info(:run_ntp, state) do
+    IO.inspect :run_ntp
+    # nerves_ntp starts before our wifi to rerun it now
+    System.cmd("/usr/sbin/ntpd", ["-n", "-q", "-p", "0.pool.ntp.org", "-p", "1.pool.ntp.org", "-p", "2.pool.ntp.org", "-p", "3.pool.ntp.org"])
+    send(self(), :update_status)
+    {:noreply, state}
   end
 
   def handle_info(:update_status, %{ led_mapping: led_mapping, delay: delay }=state) do
     Logger.info "Status Monitor fetching new status"
-    # nerves_ntp starts before our wifi to rerun it now
-    System.cmd("/usr/sbin/ntpd", ["-n", "-q", "-p", "0.pool.ntp.org", "-p", "1.pool.ntp.org", "-p", "2.pool.ntp.org", "-p", "3.pool.ntp.org"])
 
     status = StatusMonitor.Rollbar.fetch_status()
     GenServer.cast(self(), :draw)
     schedule_status_check(delay)
+    Logger.info "Status Monitor got new statuses"
     {:noreply, %{ led_mapping: led_mapping, delay: delay, status: status }}
   end
 
@@ -64,6 +87,25 @@ defmodule StatusMonitor.Server do
 
   defp schedule_status_check(delay) do
     Process.send_after(self(), :update_status, delay)
+  end
+
+  defp has_non_loopback_ip? do
+    case :inet.getif() do
+      {:ok, ips} -> has_non_loopback_ip?(ips)
+      _ -> false
+    end
+  end
+
+  defp has_non_loopback_ip?([]) do
+    false
+  end
+
+  defp has_non_loopback_ip?([{{127, 0, 0, 1}, {0, 0, 0, 0}, {255, 0, 0, 0}} | tail]) do
+    has_non_loopback_ip?(tail)
+  end
+
+  defp has_non_loopback_ip?([_head | _tail]) do
+    true
   end
 
 end
