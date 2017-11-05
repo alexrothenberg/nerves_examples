@@ -34,7 +34,7 @@ config :firmware, interface: :wlan0
 config :firmware, :tokens,
   rollbar_token: System.get_env("NERVES_ROLLBAR_TOKEN")
 
-config :ui, Ui.Endpoint,
+config :ui, UiWeb.Endpoint,
   http: [port: 80],
   url: [host: "localhost", port: 80],
   secret_key_base: "9w9MI64d1L8mjw+tzTmS3qgJTJqYNGJ1dNfn4S/Zm6BbKAmo2vAyVW7CgfI3CpII",

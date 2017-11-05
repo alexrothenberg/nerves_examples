@@ -1,4 +1,4 @@
-defmodule Ui.ErrorHelpers do
+defmodule UiWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -9,9 +9,9 @@ defmodule Ui.ErrorHelpers do
   Generates tag for inlined form input errors.
   """
   def error_tag(form, field) do
-    if error = form.errors[field] do
+    Enum.map(Keyword.get_values(form.errors, field), fn (error) ->
       content_tag :span, translate_error(error), class: "help-block"
-    end
+    end)
   end
 
   @doc """
@@ -32,9 +32,9 @@ defmodule Ui.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(Ui.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(UiWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(Ui.Gettext, "errors", msg, opts)
+      Gettext.dgettext(UiWeb.Gettext, "errors", msg, opts)
     end
   end
 end

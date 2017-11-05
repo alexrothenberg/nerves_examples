@@ -1,5 +1,5 @@
-defmodule Ui.PageControllerTest do
-  use Ui.ConnCase
+defmodule UiWeb.PageControllerTest do
+  use UiWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"
