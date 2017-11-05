@@ -1,4 +1,8 @@
 defmodule StatusMonitor do
+  def get_last_update do
+    GenServer.call(StatusMonitor.Server, {:get_last_update})
+  end
+
   def get_status do
     GenServer.call(StatusMonitor.Server, {:get_status})
   end

@@ -2,8 +2,10 @@ defmodule UiWeb.PageController do
   use UiWeb, :controller
 
   def index(conn, _params) do
-    led_mapping = StatusMonitor.get_led_mapping()
-    status = StatusMonitor.get_status()
-    render conn, "index.html", led_mapping: led_mapping, status: status
+    conn
+    |> assign(:last_update, StatusMonitor.get_last_update())
+    |> assign(:led_mapping, StatusMonitor.get_led_mapping())
+    |> assign(:status, StatusMonitor.get_status())
+    |> render("index.html")
   end
 end

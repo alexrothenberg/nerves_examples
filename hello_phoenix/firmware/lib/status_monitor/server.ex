@@ -21,46 +21,39 @@ defmodule StatusMonitor.Server do
     }
     delay = 5 * 60 * 1000 # 5 minutes
 
-    send(self(), :wait_for_wifi)
+    send(self(), :update_status)
     {:ok, %{ led_mapping: led_mapping, delay: delay }}
   end
 
-  def handle_info(:wait_for_wifi, state) do
-    # IO.inspect Nerves.NetworkInterface.status("wlan0")
-    # IO.inspect [:inet.getif(), has_non_loopback_ip?()]
+  def handle_info(:update_status, %{ delay: delay } = state) do
     if has_non_loopback_ip?() do
-      send(self(), :run_ntp)
+      Logger.info "Status Monitor fetching new status"
+
+      # nerves_ntp starts before our wifi to rerun it now
+      System.cmd("/usr/sbin/ntpd", ["-n", "-q", "-p", "0.pool.ntp.org", "-p", "1.pool.ntp.org", "-p", "2.pool.ntp.org", "-p", "3.pool.ntp.org"])
+
+      status = StatusMonitor.Rollbar.fetch_status()
+      GenServer.cast(self(), :draw)
+      schedule_status_check(delay)
+      Logger.info "Status Monitor got new statuses"
+      new_state = state
+        |> Map.put(:status, status)
+        |> Map.put(:last_update, DateTime.utc_now)
+      {:noreply, new_state}
     else
-      Process.send_after(self(), :wait_for_wifi, 1000)
+      Logger.info "Can't update status because we don't have an IP"
+      Process.send_after(self(), :update_status, 1000)
+      {:noreply, state}
     end
-    # case Nerves.NetworkInterface.status("wlan0") do
-    #   {:ok, %{is_up: true, is_running: true}} -> send(self(), :run_ntp)
-    #   _ -> Process.send_after(self(), :wait_for_wifi, 1000)
-    # end
-    {:noreply, state}
-  end
-
-  def handle_info(:run_ntp, state) do
-    IO.inspect :run_ntp
-    # nerves_ntp starts before our wifi to rerun it now
-    System.cmd("/usr/sbin/ntpd", ["-n", "-q", "-p", "0.pool.ntp.org", "-p", "1.pool.ntp.org", "-p", "2.pool.ntp.org", "-p", "3.pool.ntp.org"])
-    send(self(), :update_status)
-    {:noreply, state}
-  end
-
-  def handle_info(:update_status, %{ led_mapping: led_mapping, delay: delay }=state) do
-    Logger.info "Status Monitor fetching new status"
-
-    status = StatusMonitor.Rollbar.fetch_status()
-    GenServer.cast(self(), :draw)
-    schedule_status_check(delay)
-    Logger.info "Status Monitor got new statuses"
-    {:noreply, %{ led_mapping: led_mapping, delay: delay, status: status }}
   end
 
   def handle_cast(:draw, %{led_mapping: led_mapping, status: status}=state) do
     StatusMonitor.Rollbar.draw(led_mapping, status)
     {:noreply, state}
+  end
+
+  def handle_call({:get_last_update}, _, %{ last_update: last_update } = state) do
+    {:reply, last_update, state}
   end
 
   def handle_call({:get_status}, _, %{ status: status } = state) do
