@@ -9,20 +9,10 @@ defmodule StatusMonitor.Server do
 
   def init(%{}) do
     Logger.info "Starting Status Monitor GenServer #{DateTime.utc_now}"
-    led_mapping = %{
-      "0" => ["api_gateway", "Apothecary"],
-      "1" => ["BCI_Services", "Bouncah"],
-      "2" => ["Delorean", "feature_toggles"],
-      "3" => ["norman", "patient_log"],
-      "4" => ["Patients", "postmaster"],
-      "5" => ["referrals", "salk"],
-      "6" => ["snowflake", "staff"],
-      "7" => ["takotsubo"]
-    }
     delay = 5 * 60 * 1000 # 5 minutes
 
     send(self(), :update_status)
-    {:ok, %{ led_mapping: led_mapping, delay: delay }}
+    {:ok, %{ delay: delay }}
   end
 
   def handle_info(:update_status, %{ delay: delay } = state) do
@@ -47,9 +37,18 @@ defmodule StatusMonitor.Server do
     end
   end
 
-  def handle_cast(:draw, %{led_mapping: led_mapping, status: status}=state) do
+  def handle_cast(:draw, %{status: status}=state) do
+    led_mapping = if Map.has_key?(state, :led_mapping) do
+      state.led_mapping
+    else
+      projects_per_led = Enum.count(status) / 8
+      |> round
+      Enum.map(status, &(&1.name))
+      |> Enum.chunk_every(projects_per_led)
+    end
     StatusMonitor.Rollbar.draw(led_mapping, status)
-    {:noreply, state}
+    new_state = Map.put(state, :led_mapping, led_mapping)
+    {:noreply, new_state}
   end
 
   def handle_call({:get_last_update}, _, %{ last_update: last_update } = state) do

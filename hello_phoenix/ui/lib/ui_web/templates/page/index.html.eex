@@ -10,10 +10,12 @@
         <th>Project Name</th>
         <th>Hours Since Last Error</th>
       </tr>
-      <%= for %{ name: name, seconds_ago: seconds_ago } <- @status do %>
+      <%= for project_status <- @status do %>
         <tr>
-          <td><%= name %></td>
-          <td><%= div(seconds_ago, 60 * 60) %></td>
+          <td><%= project_status.name %></td>
+          <td>
+            <%= if Map.has_key?(project_status, :seconds_ago), do: div(project_status.seconds_ago, 60 * 60) %>
+          </td>
         </tr>
       <% end %>
     </table>

@@ -1,25 +1,37 @@
 defmodule StatusMonitor.Rollbar do
   def fetch_status() do
     rollbar_access_tokens()
-      |> Enum.map(&last_rollbar_error/1)
+    |> Enum.map(&last_rollbar_error/1)
   end
 
   def draw(led_mapping, status) do
-    Enum.map(0..7, fn(led_index)->
-      rgbb = led_index
-        |> Integer.to_string
-        |> (&(led_mapping[&1])).()
-        |> Enum.map(fn(name)->
-          Enum.find(status, &( &1.name == name))
-        end)
-        |> Enum.filter(&(Map.has_key?(&1, :seconds_ago)))
-        |> Enum.sort(&(&1.seconds_ago >= &2.seconds_ago))
-        |> List.last
-        |> (&(&1.seconds_ago)).()
-        |> to_rgbb
-      BlinkIt.set_pixel(led_index, rgbb)
+    rgbbs = Enum.map(led_mapping, fn(project_names)->
+      project_names
+      |> Enum.map(fn(name)->
+        Enum.find(status, &(&1.name == name))
+      end)
+      |> Enum.sort(fn(project, other_project)->
+        cond do
+          !Map.has_key?(project, :seconds_ago) ->
+            true
+          !Map.has_key?(other_project, :seconds_ago) ->
+            false
+          true ->
+            project.seconds_ago >= other_project.seconds_ago
+        end
+      end)
+      |> List.last()
+      |> to_rgbb()
     end)
+
+    draw_pixels(0, rgbbs)
     BlinkIt.show()
+  end
+
+  def draw_pixels(_, []), do: true
+  def draw_pixels(led_index, [rgbb | rest]) do
+    BlinkIt.set_pixel(led_index, rgbb)
+    draw_pixels(led_index + 1, rest)
   end
 
   def rollbar_access_tokens() do
@@ -50,9 +62,9 @@ defmodule StatusMonitor.Rollbar do
     end
   end
 
-  def to_rgbb(seconds) do
-    hours_ago = div(seconds, one_hour_in_seconds())
-    days_ago = div(seconds, one_day_in_seconds())
+  def to_rgbb(%{ seconds_ago: seconds_ago}) do
+    hours_ago = div(seconds_ago, one_hour_in_seconds())
+    days_ago = div(seconds_ago, one_day_in_seconds())
     cond do
       hours_ago < 6 ->
         # bright red
@@ -96,4 +108,15 @@ defmodule StatusMonitor.Rollbar do
         }
     end
   end
+
+  def to_rgbb(_project) do
+    # bright_green
+    %{
+      red: 0,
+      blue: 0,
+      green: 77,
+      brightness: 7
+    }
+  end
+
 end
