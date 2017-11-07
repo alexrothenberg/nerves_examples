@@ -37,14 +37,21 @@ defmodule StatusMonitor.Server do
     end
   end
 
+  def handle_cast(:draw, %{led_mapping: led_mapping, status: status}=state) do
+    StatusMonitor.Rollbar.draw(led_mapping, status)
+    {:noreply, state}
+  end
+
   def handle_cast(:draw, %{status: status}=state) do
-    led_mapping = if Map.has_key?(state, :led_mapping) do
-      state.led_mapping
+    projects_per_led = Enum.count(status) / 8
+    |> round
+    led_mapping = Enum.map(status, &(&1.name))
+    |> Enum.chunk_every(projects_per_led)
+    led_mapping = if Enum.count(led_mapping) == 9 do
+      last_led = Enum.concat(Enum.at(led_mapping, 7), Enum.at(led_mapping, 8))
+      List.replace_at(led_mapping, 7, last_led)
     else
-      projects_per_led = Enum.count(status) / 8
-      |> round
-      Enum.map(status, &(&1.name))
-      |> Enum.chunk_every(projects_per_led)
+      led_mapping
     end
     StatusMonitor.Rollbar.draw(led_mapping, status)
     new_state = Map.put(state, :led_mapping, led_mapping)
