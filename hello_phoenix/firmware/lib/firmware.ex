@@ -15,7 +15,7 @@ defmodule Firmware do
       worker(Task, [fn -> start_network() end], restart: :transient),
       worker(BlinkIt.Server, []),
       worker(Rollbar.Server, []),
-      worker(StatusMonitor.Server, [])
+      worker(Rainbow.Server, [])
     ]
 
 
@@ -36,15 +36,15 @@ defmodule Firmware do
     Logger.info "Done setting up Network in Firmware.start_network()"
   end
 
-  def alex do
-    BlinkIt.set_pixel(0, %{red: 255, green: 255, blue: 0, brightness: 1})
-    BlinkIt.set_pixel(1, %{red: 0, green: 0, blue: 255, brightness: 1})
-    BlinkIt.set_pixel(2, %{red: 0, green: 0, blue: 50, brightness: 1})
-    BlinkIt.set_pixel(3, %{red: 255, green: 27, blue: 0, brightness: 1})
-    BlinkIt.set_pixel(4, %{red: 185, green: 48, blue: 5, brightness: 1})
-    BlinkIt.set_pixel(5, %{red: 165, green: 42, blue: 42, brightness: 1})
-    BlinkIt.set_pixel(6, %{red: 165, green: 42, blue: 42, brightness: 1})
-    BlinkIt.set_pixel(7, %{red: 245, green: 222, blue: 147, brightness: 1})
+  def leo do
+    BlinkIt.set_pixel(0, %{red: 134, green: 234, blue: 34,   brightness: 3})
+    BlinkIt.set_pixel(1, %{red: 225,   green: 200,   blue: 50, brightness: 1})
+    BlinkIt.set_pixel(2, %{red: 50,   green: 200,   blue: 75,  brightness: 1})
+    BlinkIt.set_pixel(3, %{red: 51, green: 255,  blue: 204,   brightness: 1})
+    BlinkIt.set_pixel(4, %{red: 0, green: 136,  blue: 5,   brightness: 1})
+    BlinkIt.set_pixel(5, %{red: 255, green: 0,  blue: 0,  brightness: 1})
+    BlinkIt.set_pixel(6, %{red: 0, green: 0,  blue: 255,  brightness: 1})
+    BlinkIt.set_pixel(7, %{red: 153, green: 254, blue: 1, brightness: 1})
     BlinkIt.show()
   end
 
