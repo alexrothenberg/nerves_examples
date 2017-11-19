@@ -7,7 +7,7 @@ defmodule Rainbow.Server do
   end
 
   def init(%{}) do
-    delay = 1000 # 1 second
+    delay = 5 * 1000 # 1 second
 
     Process.send_after(self(), :draw, 10_000)
     {:ok, %{ delay: delay, iteration: 0 }}
@@ -28,7 +28,7 @@ defmodule Rainbow.Server do
     saturation = mod(i * 7, 50) + 40
     hsv = %ColorUtils.HSV{hue: hue, saturation: saturation, value: value}
     %ColorUtils.RGB{blue: blue, green: green, red: red} = ColorUtils.hsv_to_rgb(hsv)
-    IO.inspect([index, i, hsv, %{red: red, green: green, blue: blue, brightness: 7}])
+    # IO.inspect([index, i, hsv, %{red: red, green: green, blue: blue, brightness: 7}])
     %{red: red, green: green, blue: blue, brightness: 2}
   end
 
