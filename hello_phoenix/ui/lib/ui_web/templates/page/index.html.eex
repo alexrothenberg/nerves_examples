@@ -4,12 +4,8 @@
 
 <div class="row marketing">
   <div class="col-lg-6">
-    <h4>Status (<%= @last_update %>)</h4>
+    <h4>Status</h4>
     Hi Leo
   </div>
 
-  <div class="col-lg-6">
-    <h4>Led mapping </h4>
-    <%= inspect(@led_mapping) %>
-  </div>
 </div>

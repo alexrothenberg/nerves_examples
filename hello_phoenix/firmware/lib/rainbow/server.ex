@@ -9,29 +9,27 @@ defmodule Rainbow.Server do
   def init(%{}) do
     delay = 1000 # 1 second
 
-    Process.send_after(self(), :draw, 20_000)
-    {:ok, %{ delay: delay, s: 5 }}
+    Process.send_after(self(), :draw, 10_000)
+    {:ok, %{ delay: delay, iteration: 0 }}
   end
 
-  def handle_info(:draw, %{ delay: delay, s: s }) do
-    Enum.each((0..7), &(BlinkIt.set_pixel(&1, rgbb_for(&1, s))))
+  def handle_info(:draw, %{ delay: delay, iteration: i }) do
+    Enum.each((0..7), &(BlinkIt.set_pixel(&1, rgbb_for(&1, i))))
 
     BlinkIt.show()
 
     Process.send_after(self(), :draw, delay)
-    {:noreply, %{delay: delay, s: mod(s + 7, 50)} }
+    {:noreply, %{delay: delay, iteration: i + 1} }
   end
 
-  def rgbb_for(index, saturation) do
-    # spacing = div(360, 16)
-    # offset = index * spacing
-    hue = index * div(360, 8) + Enum.random(-5..5)
+  def rgbb_for(index, i) do
+    hue = mod(index+i, 8) * div(360, 8) + Enum.random(0..10) |> mod(360)
     value = Enum.random(30..100)
-    saturation = 95 #saturation + 40
+    saturation = mod(i * 7, 50) + 40
     hsv = %ColorUtils.HSV{hue: hue, saturation: saturation, value: value}
     %ColorUtils.RGB{blue: blue, green: green, red: red} = ColorUtils.hsv_to_rgb(hsv)
-    IO.inspect([index, hsv, %{red: red, green: green, blue: blue, brightness: 7}])
-    %{red: red, green: green, blue: blue, brightness: 4}
+    IO.inspect([index, i, hsv, %{red: red, green: green, blue: blue, brightness: 7}])
+    %{red: red, green: green, blue: blue, brightness: 2}
   end
 
   def mod(x,y) when x > 0, do: rem(x, y);

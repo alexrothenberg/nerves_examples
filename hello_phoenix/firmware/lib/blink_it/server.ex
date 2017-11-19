@@ -10,13 +10,17 @@ defmodule BlinkIt.Server do
     {:ok, Impl.init() }
   end
 
-  def handle_call({:set_pixel, pixel_index, rgbb}, _, %{pins: pins, pixels: pixels}) do
+  def handle_cast({:set_pixel, pixel_index, rgbb}, %{pins: pins, pixels: pixels}) do
     new_pixels = Impl.set_pixel(pixels, pixel_index, rgbb)
-    {:reply, {}, %{pins: pins, pixels: new_pixels}}
+    {:noreply, %{pins: pins, pixels: new_pixels}}
   end
 
-  def handle_call({:show}, _, %{pins: pins, pixels: pixels}) do
+  def handle_call({:get_pixels}, _, %{pixels: pixels}=state) do
+    {:reply, pixels, state}
+  end
+
+  def handle_cast({:show}, %{pins: pins, pixels: pixels}=state) do
     Impl.show(pins, pixels)
-    {:reply, {}, %{pins: pins, pixels: pixels}}
+    {:noreply, state}
   end
 end
