@@ -21,13 +21,13 @@ body, form, ul, table {
 .header {
   border-bottom: 1px solid #e5e5e5;
 }
-.logo {
-  width: 111px;
-  height: 49px;
+.leo {
+  width: 500px;
+  height: 667px;
   display: inline-block;
   margin-bottom: 1em;
-  background-image: url("/images/iora.png");
-  background-size: 111px 49px;
+  background-image: url("/images/leo.jpg");
+  background-size: 500px 667px;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */

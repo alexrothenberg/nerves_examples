@@ -6,6 +6,8 @@
   <div class="col-lg-6">
     <h4>Status</h4>
     Hi Leo
+
+    <span class="leo"></span>
   </div>
 
 </div>

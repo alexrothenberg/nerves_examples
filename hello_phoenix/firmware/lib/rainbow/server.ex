@@ -23,9 +23,9 @@ defmodule Rainbow.Server do
   end
 
   def rgbb_for(index, i) do
-    hue = mod(index+i, 8) * div(360, 8) + Enum.random(0..10) |> mod(360)
+    hue = index * div(360, 8) + Enum.random(0..10) |> mod(360)
     value = Enum.random(30..100)
-    saturation = mod(i * 7, 50) + 40
+    saturation = mod(i * 7, 50) + 50
     hsv = %ColorUtils.HSV{hue: hue, saturation: saturation, value: value}
     %ColorUtils.RGB{blue: blue, green: green, red: red} = ColorUtils.hsv_to_rgb(hsv)
     # IO.inspect([index, i, hsv, %{red: red, green: green, blue: blue, brightness: 7}])
