@@ -27,7 +27,7 @@ defmodule Rollbar.Impl do
 
   def get_items(project_access_token) do
     {:ok, response} = HTTPoison.get(
-      "https://api.rollbar.com/api/1/items?access_token=#{project_access_token}&status=active",
+      "https://api.rollbar.com/api/1/items?access_token=#{project_access_token}&status=active&level=error&level=critical",
       [],
       hackney: [:insecure]
       )

@@ -66,7 +66,7 @@ defmodule StatusMonitor.Rollbar do
     hours_ago = div(seconds_ago, one_hour_in_seconds())
     days_ago = div(seconds_ago, one_day_in_seconds())
     cond do
-      hours_ago < 6 ->
+      hours_ago < 1 ->
         # bright red
         %{
           red: 255,
@@ -74,21 +74,21 @@ defmodule StatusMonitor.Rollbar do
           blue: 0,
           brightness: 31
         }
-      days_ago < 1 ->
-        # still pretty bright red
-        %{
-          red: 128,
-          green: 0,
-          blue: 0,
-          brightness: 20
-        }
-      days_ago < 3 ->
+      hours_ago < 6 ->
         # red
         %{
-          red: 30,
+          red: 50,
           green: 0,
           blue: 0,
-          brightness: 10
+          brightness: 7
+        }
+      days_ago < 3 ->
+        # orange
+        %{
+          red: 90,
+          green: 20,
+          blue: 0,
+          brightness: 3
         }
       days_ago < 7 ->
         # yellow
