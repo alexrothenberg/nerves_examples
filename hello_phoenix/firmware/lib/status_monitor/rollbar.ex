@@ -40,6 +40,7 @@ defmodule StatusMonitor.Rollbar do
         access_token = Rollbar.get_project_read_only_access_token(project["id"])
         [project["name"], access_token]
       end)
+      |> Enum.filter(&(&1 != [nil, nil]))
       |> Enum.map(fn [a,b]-> {a,b} end)
       |> Map.new
   end
