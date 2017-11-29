@@ -12,7 +12,9 @@
       </tr>
       <%= for project_status <- @status do %>
         <tr>
-          <td><%= project_status.name %></td>
+          <td>
+            <a href="https://rollbar.com/IoraHealth/<%= project_status.name %>"><%= project_status.name %></a>
+          </td>
           <td>
             <%= if Map.has_key?(project_status, :seconds_ago), do: div(project_status.seconds_ago, 60 * 60) %>
           </td>

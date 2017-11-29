@@ -37,7 +37,7 @@ defmodule StatusMonitor.Server do
     end
   end
 
-  def handle_cast(:update_status, state) do
+  def handle_cast({:update_status}, state) do
     if has_non_loopback_ip?() do
       Logger.info "Status Monitor fetching new status"
 
