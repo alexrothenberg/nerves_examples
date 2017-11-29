@@ -24,6 +24,10 @@
   <div class="col-lg-6">
     <h4>Led mapping </h4>
     <%= inspect(@led_mapping) %>
+
+    <br>
+    <a href="/?action=rollbar">update now</a>
+
   </div>
 </div>
 

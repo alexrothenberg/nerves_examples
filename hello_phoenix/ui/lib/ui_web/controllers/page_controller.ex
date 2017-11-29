@@ -1,6 +1,12 @@
 defmodule UiWeb.PageController do
   use UiWeb, :controller
 
+  def index(conn, %{"action" => "rollbar"}) do
+    StatusMonitor.update_status()
+
+    redirect conn, to: page_path(conn, :index)
+  end
+
   def index(conn, %{"action" => action}) do
     # Colors.stop()
     apply(Colors, String.to_atom(action), [])
