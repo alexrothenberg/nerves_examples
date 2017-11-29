@@ -71,6 +71,7 @@ defmodule Firmware.Mixfile do
       {:elixir_ale, "~> 1.0"},
       {:httpoison, "~> 0.13"},
       {:ui, path: "../ui"},
+      {:color_utils, "~> 0.2.0"},
     ]
   end
 

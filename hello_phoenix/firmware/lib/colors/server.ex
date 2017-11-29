@@ -54,27 +54,6 @@ defmodule Colors.Server do
     {:noreply, %{delay: delay, iteration: iteration + 1} }
   end
 
-  # def handle_info(:draw_gradient, %{ delay: delay, v: v, r: r, g: g, b: b }) do
-  #   num_pixels = 8
-  #   hue_start = 0
-  #   hue_range = 120
-  #   max_brightness = 0.2
-
-  #   v = v * num_pixels
-  #   Enum.each((0..7), fn(i)->
-  #   #   &(BlinkIt.set_pixel(&1, rgbb_for(&1, i))))
-  #   # for x in range(blinkt.num_pixels):
-  #     hue = ((hue_start + ((i / num_pixels)) * hue_range)) % 360) |> mod(360)
-  #     brightness = 7
-  #     rgbb = rgbb_for(%HSV{hue: hue, saturation: 100, value: 100}, brightness)
-  #     BlinkIt.set_pixel(i, rgbb)
-
-  #     Process.send_after(self(), :draw_gradient, delay)
-  #       v -= 1
-
-  #   blinkt.show()
-
-
   def rgbb_for(%HSV{hue: hue, saturation: saturation, value: value}=hsv, brightness) do
     # IO.inspect hsv
     %ColorUtils.RGB{blue: blue, green: green, red: red} = ColorUtils.hsv_to_rgb(hsv)

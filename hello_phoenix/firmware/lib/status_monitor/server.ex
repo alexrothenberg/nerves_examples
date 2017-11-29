@@ -37,6 +37,23 @@ defmodule StatusMonitor.Server do
     end
   end
 
+  def handle_cast(:update_status, state) do
+    if has_non_loopback_ip?() do
+      Logger.info "Status Monitor fetching new status"
+
+      status = StatusMonitor.Rollbar.fetch_status()
+      GenServer.cast(self(), :draw)
+      Logger.info "Status Monitor got new statuses"
+      new_state = state
+        |> Map.put(:status, status)
+        |> Map.put(:last_update, DateTime.utc_now)
+      {:noreply, new_state}
+    else
+      Logger.info "Can't update status because we don't have an IP"
+      {:noreply, state}
+    end
+  end
+
   def handle_cast(:draw, %{led_mapping: led_mapping, status: status}=state) do
     StatusMonitor.Rollbar.draw(led_mapping, status)
     {:noreply, state}

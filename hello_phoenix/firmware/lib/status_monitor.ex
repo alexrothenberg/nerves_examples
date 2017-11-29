@@ -7,6 +7,10 @@ defmodule StatusMonitor do
     GenServer.call(StatusMonitor.Server, {:get_status})
   end
 
+  def update_status do
+    GenServer.cast(StatusMonitor.Server, {:update_status})
+  end
+
   def get_led_mapping do
     GenServer.call(StatusMonitor.Server, {:get_led_mapping})
   end
