@@ -14,7 +14,7 @@ defmodule Firmware do
       supervisor(Phoenix.PubSub.PG2, [Nerves.PubSub, [poolsize: 1]]),
       worker(Task, [fn -> start_network() end], restart: :transient),
       worker(BlinkIt.Server, []),
-      worker(Rainbow.Server, [])
+      worker(Colors.Server, [])
     ]
 
 

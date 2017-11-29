@@ -10,4 +10,8 @@
     <span class="leo"></span>
   </div>
 
+  <a href="/?action=stop">stop</a>
+  <a href="/?action=xmas">xmas</a>
+  <a href="/?action=rainbow">rainbow</a>
+
 </div>
