@@ -15,7 +15,8 @@ defmodule Firmware do
       worker(Task, [fn -> start_network() end], restart: :transient),
       worker(BlinkIt.Server, []),
       worker(Rollbar.Server, []),
-      worker(StatusMonitor.Server, [])
+      worker(StatusMonitor.Server, []),
+      worker(Colors.Server, [])
     ]
 
 
