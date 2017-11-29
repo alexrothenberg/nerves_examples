@@ -31,7 +31,7 @@ defmodule Colors.Server do
   end
 
   def handle_info(:xmas, %{ delay: delay, iteration: iteration }) do
-    IO.inspect({:xmas, iteration})
+    # IO.inspect({:xmas, iteration})
     red_rgbb = %{red: 255, green: 0, blue: 0, brightness: 7}
     green_rgbb = %{red: 0, green: 255, blue: 0, brightness: 7}
 
@@ -76,8 +76,9 @@ defmodule Colors.Server do
 
 
   def rgbb_for(%HSV{hue: hue, saturation: saturation, value: value}=hsv, brightness) do
+    # IO.inspect hsv
     %ColorUtils.RGB{blue: blue, green: green, red: red} = ColorUtils.hsv_to_rgb(hsv)
-    IO.inspect([%{red: red, green: green, blue: blue, brightness: 7}])
+    # IO.inspect([%{red: red, green: green, blue: blue, brightness: 7}])
     %{red: red, green: green, blue: blue, brightness: brightness}
   end
 
